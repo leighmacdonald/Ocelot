@@ -2,6 +2,11 @@
 
 Ocelot is a BitTorrent tracker written in C++ for the [Gazelle](http://whatcd.github.io/Gazelle/) project. It supports requests over TCP and can only track IPv4 peers.
 
+  This is a WIP fork to integrate cmake and postgres over autotools and mysql. This is *not* meant to be a 
+  direct drop in replacement on a Gazelle based site as it will also require changes, which i will not
+  be doing or be going over at all since i am not interested in gazelle itself.
+
+
 ## Ocelot Compile-time Dependencies
 
 * [GCC/G++](http://gcc.gnu.org/) (4.7+ required; 4.8.1+ recommended)
