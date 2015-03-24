@@ -8,15 +8,16 @@
 #include "config.h"
 
 using boost::asio::ip::tcp;
+using namespace std;
 
 class site_comm {
 	private:
-		std::string site_host;
-		std::string site_path;
-		std::string site_password;
-		std::mutex expire_queue_lock;
-		std::string expire_token_buffer;
-		std::queue<std::string> token_queue;
+		string site_host;
+		string site_path;
+		string site_password;
+		mutex expire_queue_lock;
+		string expire_token_buffer;
+		queue<string> token_queue;
 		bool readonly;
 		bool t_active;
 		void load_config(config * conf);
