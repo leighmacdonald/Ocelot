@@ -4,11 +4,13 @@
 #include <string>
 #include <map>
 
+using namespace std;
+
 class confval {
 	private:
 		bool bool_val;
 		uint32_t uint_val;
-		std::string str_val;
+		string str_val;
 		enum {
 			CONF_NONEXISTENT,
 			CONF_BOOL,
@@ -22,30 +24,30 @@ class confval {
 		confval(const char * value);
 		uint32_t get_uint();
 		bool get_bool();
-		std::string get_str();
-		void set(const std::string &val);
+		string get_str();
+		void set(const string &val);
 };
 
 class config {
 	private:
-		template <typename T> void add(const std::string &setting_name, T value);
-		std::string trim(const std::string str);
+		template <typename T> void add(const string &setting_name, T value);
+		string trim(const string str);
 		void init();
-		confval * get(const std::string &setting_name);
-		std::map<std::string, confval> settings;
+		confval * get(const string &setting_name);
+		map<string, confval> settings;
 		confval * dummy_setting;
 	public:
 		config();
-		void load(std::istream &conf_file);
-		void load(const std::string &conf_file_path, std::istream &conf_file);
+		void load(istream &conf_file);
+		void load(const string &conf_file_path, istream &conf_file);
 		void reload();
-		bool get_bool(const std::string &setting_name);
-		uint32_t get_uint(const std::string &setting_name);
-		std::string get_str(const std::string &setting_name);
-		void set(const std::string &setting_name, const std::string &value);
+		bool get_bool(const string &setting_name);
+		uint32_t get_uint(const string &setting_name);
+		string get_str(const string &setting_name);
+		void set(const string &setting_name, const string &value);
 };
 
-template <typename T> void config::add(const std::string &setting_name, T value) {
+template <typename T> void config::add(const string &setting_name, T value) {
 	confval setting(value);
 	settings[setting_name] = setting;
 }

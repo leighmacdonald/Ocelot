@@ -2,31 +2,34 @@
 #include <iostream>
 #include <sstream>
 
-int32_t strtoint32(const std::string& str) {
-	std::istringstream stream(str);
+using namespace std;
+
+
+int32_t strtoint32(const string& str) {
+	istringstream stream(str);
 	int32_t i = 0;
 	stream >> i;
 	return i;
 }
 
-int64_t strtoint64(const std::string& str) {
-	std::istringstream stream(str);
+int64_t strtoint64(const string& str) {
+	istringstream stream(str);
 	int64_t i = 0;
 	stream >> i;
 	return i;
 }
 
 
-std::string inttostr(const int i) {
-	std::string str;
-	std::stringstream out;
+string inttostr(const int i) {
+	string str;
+	stringstream out;
 	out << i;
 	str = out.str();
 	return str;
 }
 
-std::string hex_decode(const std::string &in) {
-	std::string out;
+string hex_decode(const string &in) {
+	string out;
 	out.reserve(20);
 	unsigned int in_length = in.length();
 	for (unsigned int i = 0; i < in_length; i++) {
@@ -57,8 +60,8 @@ std::string hex_decode(const std::string &in) {
 	return out;
 }
 
-std::string bintohex(const std::string &in) {
-	std::string out;
+string bintohex(const string &in) {
+	string out;
 	size_t length = in.length();
 	out.reserve(2*length);
 	for (unsigned int i = 0; i < length; i++) {

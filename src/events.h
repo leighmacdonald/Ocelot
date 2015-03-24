@@ -24,6 +24,7 @@ TODO find out what these do
 #include <sys/types.h>
 */
 
+using namespace std;
 
 
 
@@ -87,8 +88,8 @@ class connection_middleman {
 		ev::io read_event;
 		ev::io write_event;
 		ev::timer timeout_event;
-		std::string request;
-		std::string response;
+		string request;
+		string response;
 
 		connection_mother * mother;
 		worker * work;

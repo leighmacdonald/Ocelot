@@ -10,6 +10,8 @@
 #include "schedule.h"
 #include "site_comm.h"
 
+using namespace std;
+
 static connection_mother *mother;
 static worker *work;
 static mysql *db;
@@ -21,35 +23,35 @@ struct stats_t stats;
 
 static void sig_handler(int sig) {
 	if (sig == SIGINT || sig == SIGTERM) {
-		std::cout << "Caught SIGINT/SIGTERM" << std::endl;
+		cout << "Caught SIGINT/SIGTERM" << endl;
 		if (work->shutdown()) {
 			exit(0);
 		}
 	} else if (sig == SIGHUP) {
-		std::cout << "Reloading config" << std::endl;
-		std::cout.flush();
+		cout << "Reloading config" << endl;
+		cout.flush();
 		conf->reload();
 		db->reload_config(conf);
 		mother->reload_config(conf);
 		sc->reload_config(conf);
 		sched->reload_config(conf);
 		work->reload_config(conf);
-		std::cout << "Done reloading config" << std::endl;
+		cout << "Done reloading config" << endl;
 	} else if (sig == SIGUSR1) {
-		std::cout << "Reloading from database" << std::endl;
-		std::thread w_thread(&worker::reload_lists, work);
+		cout << "Reloading from database" << endl;
+		thread w_thread(&worker::reload_lists, work);
 		w_thread.detach();
 	}
 }
 
 int main(int argc, char **argv) {
 	// we don't use printf so make cout/cerr a little bit faster
-	std::ios_base::sync_with_stdio(false);
+	ios_base::sync_with_stdio(false);
 
 	conf = new config();
 
 	bool verbose = false, conf_arg = false;
-	std::string conf_file_path("./ocelot.conf");
+	string conf_file_path("./ocelot.conf");
 	for (int i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-v")) {
 			verbose = true;
@@ -57,16 +59,16 @@ int main(int argc, char **argv) {
 			conf_arg = true;
 			conf_file_path = argv[++i];
 		} else {
-			std::cout << "Usage: " << argv[0] << " [-v] [-c configfile]" << std::endl;
+			cout << "Usage: " << argv[0] << " [-v] [-c configfile]" << endl;
 			return 0;
 		}
 	}
 
-	std::ifstream conf_file(conf_file_path);
+	ifstream conf_file(conf_file_path);
 	if (conf_file.fail()) {
-		std::cout << "Using default config because '" << conf_file_path << "' couldn't be opened" << std::endl;
+		cout << "Using default config because '" << conf_file_path << "' couldn't be opened" << endl;
 		if (!conf_arg) {
-			std::cout << "Start Ocelot with -c <path> to specify config file if necessary" << std::endl;
+			cout << "Start Ocelot with -c <path> to specify config file if necessary" << endl;
 		}
 	} else {
 		conf->load(conf_file_path, conf_file);
@@ -75,7 +77,7 @@ int main(int argc, char **argv) {
 	db = new mysql(conf);
 
 	if (!db->connected()) {
-		std::cout << "Exiting" << std::endl;
+		cout << "Exiting" << endl;
 		return 0;
 	}
 	db->verbose_flush = verbose;
@@ -85,7 +87,7 @@ int main(int argc, char **argv) {
 
 	user_list users_list;
 	torrent_list torrents_list;
-	std::vector<std::string> whitelist;
+	vector<string> whitelist;
 	db->load_users(users_list);
 	db->load_torrents(torrents_list);
 	db->load_whitelist(whitelist);

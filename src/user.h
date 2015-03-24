@@ -4,6 +4,9 @@
 #include <atomic>
 #include "ocelot.h"
 
+using namespace std;
+
+
 class user {
 	private:
 		userid_t id;
@@ -11,8 +14,8 @@ class user {
 		bool leechstatus;
 		bool protect_ip;
 		struct {
-			std::atomic<uint32_t> leeching;
-			std::atomic<uint32_t> seeding;
+			atomic<uint32_t> leeching;
+			atomic<uint32_t> seeding;
 		} stats;
 	public:
 		user(userid_t uid, bool leech, bool protect);

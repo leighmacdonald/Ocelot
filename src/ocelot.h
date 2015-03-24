@@ -9,11 +9,13 @@
 #include <memory>
 #include <atomic>
 
+using namespace std;
+
 typedef uint32_t torid_t;
 typedef uint32_t userid_t;
 
 class user;
-typedef std::shared_ptr<user> user_ptr;
+typedef shared_ptr<user> user_ptr;
 
 typedef struct {
 	int64_t uploaded;
@@ -27,11 +29,11 @@ typedef struct {
 	bool visible;
 	bool invalid_ip;
 	user_ptr user;
-	std::string ip_port;
-	std::string ip;
+	string ip_port;
+	string ip;
 } peer;
 
-typedef std::map<std::string, peer> peer_list;
+typedef map<string, peer> peer_list;
 
 enum freetype { NORMAL, FREE, NEUTRAL };
 
@@ -43,8 +45,8 @@ typedef struct {
 	time_t last_flushed;
 	peer_list seeders;
 	peer_list leechers;
-	std::string last_selected_seeder;
-	std::set<userid_t> tokened_users;
+	string last_selected_seeder;
+	set<userid_t> tokened_users;
 } torrent;
 
 enum {
@@ -84,23 +86,23 @@ typedef struct {
 	bool http_close;
 } client_opts_t;
 
-typedef std::unordered_map<std::string, torrent> torrent_list;
-typedef std::unordered_map<std::string, user_ptr> user_list;
-typedef std::unordered_map<std::string, std::string> params_type;
+typedef unordered_map<string, torrent> torrent_list;
+typedef unordered_map<string, user_ptr> user_list;
+typedef unordered_map<string, string> params_type;
 
 struct stats_t {
-	std::atomic<uint32_t> open_connections;
-	std::atomic<uint64_t> opened_connections;
-	std::atomic<uint64_t> connection_rate;
-	std::atomic<uint32_t> leechers;
-	std::atomic<uint32_t> seeders;
-	std::atomic<uint64_t> requests;
-	std::atomic<uint64_t> request_rate;
-	std::atomic<uint64_t> announcements;
-	std::atomic<uint64_t> succ_announcements;
-	std::atomic<uint64_t> scrapes;
-	std::atomic<uint64_t> bytes_read;
-	std::atomic<uint64_t> bytes_written;
+	atomic<uint32_t> open_connections;
+	atomic<uint64_t> opened_connections;
+	atomic<uint64_t> connection_rate;
+	atomic<uint32_t> leechers;
+	atomic<uint32_t> seeders;
+	atomic<uint64_t> requests;
+	atomic<uint64_t> request_rate;
+	atomic<uint64_t> announcements;
+	atomic<uint64_t> succ_announcements;
+	atomic<uint64_t> scrapes;
+	atomic<uint64_t> bytes_read;
+	atomic<uint64_t> bytes_written;
 	time_t start_time;
 };
 extern struct stats_t stats;

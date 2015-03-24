@@ -2,10 +2,12 @@
 #define MISC_FUNCTIONS__H
 #include <string>
 
-int32_t strtoint32(const std::string& str);
-int64_t strtoint64(const std::string& str);
-std::string inttostr(int i);
-std::string hex_decode(const std::string &in);
-std::string bintohex(const std::string &in);
+using namespace std;
+
+int32_t strtoint32(const string& str);
+int64_t strtoint64(const string& str);
+string inttostr(int i);
+string hex_decode(const string &in);
+string bintohex(const string &in);
 
 #endif

@@ -7,6 +7,9 @@
 #include "response.h"
 #include "events.h"
 
+
+using namespace std;
+
 // Define the connection mother (first half) and connection middlemen (second half)
 
 //TODO Better errors
@@ -41,7 +44,7 @@ void connection_mother::reload_config(config * conf) {
 	unsigned int old_max_connections = max_connections;
 	load_config(conf);
 	if (old_listen_port != listen_port) {
-		std::cout << "Changing listen port from " << old_listen_port << " to " << listen_port << std::endl;
+		cout << "Changing listen port from " << old_listen_port << " to " << listen_port << endl;
 		int new_listen_socket = create_listen_socket();
 		if (new_listen_socket != 0) {
 			listen_event.stop();
@@ -49,7 +52,7 @@ void connection_mother::reload_config(config * conf) {
 			close(listen_socket);
 			listen_socket = new_listen_socket;
 		} else {
-			std::cout << "Couldn't create new listen socket when reloading config" << std::endl;
+			cout << "Couldn't create new listen socket when reloading config" << endl;
 		}
 	} else if (old_max_connections != max_connections) {
 		listen(listen_socket, max_connections);
@@ -64,7 +67,7 @@ int connection_mother::create_listen_socket() {
 	// Stop old sockets from hogging the port
 	int yes = 1;
 	if (setsockopt(new_listen_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-		std::cout << "Could not reuse socket: " << strerror(errno) << std::endl;
+		cout << "Could not reuse socket: " << strerror(errno) << endl;
 		return 0;
 	}
 
@@ -76,24 +79,24 @@ int connection_mother::create_listen_socket() {
 
 	// Bind
 	if (bind(new_listen_socket, (sockaddr *) &address, sizeof(address)) == -1) {
-		std::cout << "Bind failed: " << strerror(errno) << std::endl;
+		cout << "Bind failed: " << strerror(errno) << endl;
 		return 0;
 	}
 
 	// Listen
 	if (listen(new_listen_socket, max_connections) == -1) {
-		std::cout << "Listen failed: " << strerror(errno) << std::endl;
+		cout << "Listen failed: " << strerror(errno) << endl;
 		return 0;
 	}
 
 	// Set non-blocking
 	int flags = fcntl(new_listen_socket, F_GETFL);
 	if (flags == -1) {
-		std::cout << "Could not get socket flags: " << strerror(errno) << std::endl;
+		cout << "Could not get socket flags: " << strerror(errno) << endl;
 		return 0;
 	}
 	if (fcntl(new_listen_socket, F_SETFL, flags | O_NONBLOCK) == -1) {
-		std::cout << "Could not set non-blocking: " << strerror(errno) << std::endl;
+		cout << "Could not set non-blocking: " << strerror(errno) << endl;
 		return 0;
 	}
 
@@ -101,7 +104,7 @@ int connection_mother::create_listen_socket() {
 }
 
 void connection_mother::run() {
-	std::cout << "Sockets up on port " << listen_port << ", starting event loop!" << std::endl;
+	cout << "Sockets up on port " << listen_port << ", starting event loop!" << endl;
 	ev_loop(ev_default_loop(0), 0);
 }
 
@@ -132,7 +135,7 @@ connection_middleman::connection_middleman(int &listen_socket, worker * new_work
 {
 	connect_sock = accept(listen_socket, NULL, NULL);
 	if (connect_sock == -1) {
-		std::cout << "Accept failed, errno " << errno << ": " << strerror(errno) << std::endl;
+		cout << "Accept failed, errno " << errno << ": " << strerror(errno) << endl;
 		delete this;
 		return;
 	}
@@ -140,10 +143,10 @@ connection_middleman::connection_middleman(int &listen_socket, worker * new_work
 	// Set non-blocking
 	int flags = fcntl(connect_sock, F_GETFL);
 	if (flags == -1) {
-		std::cout << "Could not get connect socket flags" << std::endl;
+		cout << "Could not get connect socket flags" << endl;
 	}
 	if (fcntl(connect_sock, F_SETFL, flags | O_NONBLOCK) == -1) {
-		std::cout << "Could not set non-blocking" << std::endl;
+		cout << "Could not set non-blocking" << endl;
 	}
 
 	// Get their info
@@ -177,7 +180,7 @@ void connection_middleman::handle_read(ev::io &watcher, int events_flags) {
 	stats.bytes_read += ret;
 	request.append(buffer, ret);
 	size_t request_size = request.size();
-	if (request_size > mother->max_request_size || (request_size >= 4 && request.compare(request_size - 4, std::string::npos, "\r\n\r\n") == 0)) {
+	if (request_size > mother->max_request_size || (request_size >= 4 && request.compare(request_size - 4, string::npos, "\r\n\r\n") == 0)) {
 		stats.requests++;
 		read_event.stop();
 		client_opts.gzip = false;
@@ -193,7 +196,7 @@ void connection_middleman::handle_read(ev::io &watcher, int events_flags) {
 			socklen_t addr_len = sizeof(client_addr);
 			getpeername(connect_sock, (sockaddr *) &client_addr, &addr_len);
 			inet_ntop(AF_INET, &(client_addr.sin_addr), ip, INET_ADDRSTRLEN);
-			std::string ip_str = ip;
+			string ip_str = ip;
 
 			//--- CALL WORKER
 			response = work->work(request, ip_str, client_opts);

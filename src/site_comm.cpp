@@ -11,6 +11,9 @@
 #include "config.h"
 #include "site_comm.h"
 
+using namespace std;
+
+
 using boost::asio::ip::tcp;
 
 site_comm::site_comm(config * conf) : t_active(false) {
@@ -33,16 +36,16 @@ bool site_comm::all_clear() {
 }
 
 void site_comm::expire_token(int torrent, int user) {
-	std::stringstream token_pair;
+	stringstream token_pair;
 	token_pair << user << ':' << torrent;
 	if (expire_token_buffer != "") {
 		expire_token_buffer += ",";
 	}
 	expire_token_buffer += token_pair.str();
 	if (expire_token_buffer.length() > 350) {
-		std::cout << "Flushing overloaded token buffer" << std::endl;
+		cout << "Flushing overloaded token buffer" << endl;
 		if (!readonly) {
-			std::lock_guard<std::mutex> lock(expire_queue_lock);
+			lock_guard<mutex> lock(expire_queue_lock);
 			token_queue.push(expire_token_buffer);
 		}
 		expire_token_buffer.clear();
@@ -55,10 +58,10 @@ void site_comm::flush_tokens()
 		expire_token_buffer.clear();
 		return;
 	}
-	std::lock_guard<std::mutex> lock(expire_queue_lock);
+	lock_guard<mutex> lock(expire_queue_lock);
 	size_t qsize = token_queue.size();
 	if (verbose_flush || qsize > 0) {
-		std::cout << "Token expire queue size: " << qsize << std::endl;
+		cout << "Token expire queue size: " << qsize << endl;
 	}
 	if (expire_token_buffer == "") {
 		return;
@@ -66,7 +69,7 @@ void site_comm::flush_tokens()
 	token_queue.push(expire_token_buffer);
 	expire_token_buffer.clear();
 	if (t_active == false) {
-		std::thread thread(&site_comm::do_flush_tokens, this);
+		thread thread(&site_comm::do_flush_tokens, this);
 		thread.detach();
 	}
 }
@@ -94,7 +97,7 @@ void site_comm::do_flush_tokens()
 			}
 
 			boost::asio::streambuf request;
-			std::ostream request_stream(&request);
+			ostream request_stream(&request);
 			request_stream << "GET " << site_path << "/tools.php?key=" << site_password
 				<< "&type=expiretoken&action=ocelot&tokens=" << token_queue.front() << " HTTP/1.0\r\n"
 				<< "Host: " << site_host << "\r\n"
@@ -106,28 +109,28 @@ void site_comm::do_flush_tokens()
 			boost::asio::streambuf response;
 			boost::asio::read_until(socket, response, "\r\n");
 
-			std::istream response_stream(&response);
-			std::string http_version;
+			istream response_stream(&response);
+			string http_version;
 			response_stream >> http_version;
 			unsigned int status_code;
 			response_stream >> status_code;
-			std::string status_message;
-			std::getline(response_stream, status_message);
+			string status_message;
+			getline(response_stream, status_message);
 
 			if (!response_stream || http_version.substr(0, 5) != "HTTP/") {
-				std::cout << "Invalid response" << std::endl;
+				cout << "Invalid response" << endl;
 				continue;
 			}
 
 			if (status_code == 200) {
-				std::lock_guard<std::mutex> lock(expire_queue_lock);
+				lock_guard<mutex> lock(expire_queue_lock);
 				token_queue.pop();
 			} else {
-				std::cout << "Response returned with status code " << status_code << " when trying to expire a token!" << std::endl;;
+				cout << "Response returned with status code " << status_code << " when trying to expire a token!" << endl;;
 			}
 		}
-	} catch (std::exception &e) {
-		std::cout << "Exception: " << e.what() << std::endl;
+	} catch (exception &e) {
+		cout << "Exception: " << e.what() << endl;
 	}
 	t_active = false;
 }

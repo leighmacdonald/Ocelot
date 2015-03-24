@@ -6,6 +6,9 @@
 #include "worker.h"
 #include "schedule.h"
 
+using namespace std;
+
+
 schedule::schedule(config * conf, worker * worker_obj, mysql * db_obj, site_comm * sc_obj) : work(worker_obj), db(db_obj), sc(sc_obj) {
 	load_config(conf);
 	counter = 0;
@@ -29,13 +32,13 @@ void schedule::handle(ev::timer &watcher, int events_flags) {
 	stats.connection_rate = (stats.opened_connections - last_opened_connections) / cur_schedule_interval;
 	stats.request_rate = (stats.requests - last_request_count) / cur_schedule_interval;
 	if (counter % 20 == 0) {
-		std::cout << stats.open_connections << " open, "
+		cout << stats.open_connections << " open, "
 		<< stats.opened_connections << " connections (" << stats.connection_rate << "/s), "
-		<< stats.requests << " requests (" << stats.request_rate << "/s)" << std::endl;
+		<< stats.requests << " requests (" << stats.request_rate << "/s)" << endl;
 	}
 
 	if (work->get_status() == CLOSING && db->all_clear() && sc->all_clear()) {
-		std::cout << "all clear, shutting down" << std::endl;
+		cout << "all clear, shutting down" << endl;
 		exit(0);
 	}
 

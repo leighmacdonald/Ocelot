@@ -7,9 +7,11 @@
 #include "response.h"
 #include "user.h"
 
-std::string report(params_type &params, user_list &users_list, client_opts_t &client_opts) {
-	std::stringstream output;
-	std::string action = params["get"];
+using namespace std;
+
+string report(params_type &params, user_list &users_list, client_opts_t &client_opts) {
+	stringstream output;
+	string action = params["get"];
 	if (action == "") {
 		output << "Invalid action\n";
 	} else if (action == "stats") {
@@ -20,9 +22,9 @@ std::string report(params_type &params, user_list &users_list, client_opts_t &cl
 		uptime -= up_h * 3600;
 		int up_m = uptime / 60;
 		int up_s = uptime - up_m * 60;
-		std::string up_ht = up_h <= 9 ? '0' + inttostr(up_h) : inttostr(up_h);
-		std::string up_mt = up_m <= 9 ? '0' + inttostr(up_m) : inttostr(up_m);
-		std::string up_st = up_s <= 9 ? '0' + inttostr(up_s) : inttostr(up_s);
+		string up_ht = up_h <= 9 ? '0' + inttostr(up_h) : inttostr(up_h);
+		string up_mt = up_m <= 9 ? '0' + inttostr(up_m) : inttostr(up_m);
+		string up_st = up_s <= 9 ? '0' + inttostr(up_s) : inttostr(up_s);
 
 		output << "Uptime: " << up_d << " days, " << up_ht << ':' << up_mt << ':' << up_st << '\n'
 		<< stats.opened_connections << " connections opened\n"
@@ -38,7 +40,7 @@ std::string report(params_type &params, user_list &users_list, client_opts_t &cl
 		<< stats.bytes_read << " bytes read\n"
 		<< stats.bytes_written << " bytes written\n";
 	} else if (action == "user") {
-		std::string key = params["key"];
+		string key = params["key"];
 		if (key == "") {
 			output << "Invalid action\n";
 		} else {
